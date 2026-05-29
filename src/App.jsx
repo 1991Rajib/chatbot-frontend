@@ -74,6 +74,10 @@ const styles = `
     text-align: left;
   }
 
+  p{
+    white-space: pre-wrap;
+  }
+
   .header-text p {
     font-size: 12px;
     color: rgba(255,255,255,0.35);
