@@ -70,6 +70,8 @@ const styles = `
     color: #f0eeff;
     letter-spacing: -0.3px;
     margin-bottom: 2px;
+    margin-top: 0px;
+    text-align: left;
   }
 
   .header-text p {
