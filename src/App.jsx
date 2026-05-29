@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:5001';
+axios.defaults.baseURL = 'https://chatbot-backend-8rgm.onrender.com';
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
