@@ -402,6 +402,78 @@ function MessageContent({ text }) {
   );
 }
 
+
+function MatrixBackground() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!|{}<>[]^~ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ';
+    const charArray = chars.split('');
+    
+    const fontSize = 16;
+    const drops = [];
+    
+    const initDrops = () => {
+        const columns = width / fontSize;
+        for (let i = 0; i < columns; i++) {
+            if (drops[i] === undefined) drops[i] = Math.random() * -100;
+        }
+    };
+    initDrops();
+
+    const draw = () => {
+      ctx.fillStyle = 'rgba(5, 20, 5, 0.1)'; 
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.font = fontSize + 'px VT323, monospace';
+      ctx.textAlign = 'center';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = charArray[Math.floor(Math.random() * charArray.length)];
+        const x = i * fontSize + fontSize / 2;
+        const y = drops[i] * fontSize;
+        
+        if (Math.random() > 0.95) {
+            ctx.fillStyle = '#e0ffe0';
+        } else {
+            ctx.fillStyle = '#4af626';
+        }
+
+        ctx.fillText(text, x, y);
+
+        if (y > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+
+    const interval = setInterval(draw, 50);
+
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initDrops();
+    };
+    
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%', opacity: 0.6 }} />;
+}
+
 export default function App() {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
@@ -450,7 +522,9 @@ export default function App() {
   return (
     <>
       <style>{styles}</style>
-      <div className="bg" />
+      <div className="bg">
+        <MatrixBackground />
+      </div>
       <div className="app">
 
         <div className="header">
