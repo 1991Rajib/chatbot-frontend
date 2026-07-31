@@ -476,7 +476,14 @@ function MatrixBackground() {
 
 export default function App() {
   const [message, setMessage] = useState('');
-  const [chat, setChat] = useState([]);
+    const [chat, setChat] = useState(() => {
+    const saved = localStorage.getItem('robco_chat_history');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('robco_chat_history', JSON.stringify(chat));
+  }, [chat]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const lastMessageRef = useRef(null);
@@ -538,6 +545,7 @@ export default function App() {
             <h1>ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</h1>
             <p>COPYRIGHT 2077 ROBCO(R) - SYSOP: Llama 3.1</p>
           </div>
+          <button className="copy-btn" onClick={() => setChat([])} style={{marginRight: '15px'}} title="Clear Chat History">RESET</button>
           <div className="status-dot" title="Online" />
         </div>
 
