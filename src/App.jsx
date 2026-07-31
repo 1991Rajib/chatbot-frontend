@@ -309,8 +309,7 @@ function getTime() {
 
 function parseMessage(text) {
   const parts = [];
-  const codeBlockRegex = /```(w+)?
-?([sS]*?)```/g;
+  const codeBlockRegex = /```(\w+)?\n?([\s\S]*?)```/g;
   let lastIndex = 0;
   let match;
 
