@@ -63,9 +63,9 @@ const styles = `
     width: 100%;
     height: 100vh;
     display: flex;
-    margin: 0 auto;
-    padding: 30px;
-    gap: 20px;
+    margin: 0;
+    padding: 0;
+    gap: 0;
     text-shadow: 0 0 4px rgba(0, 204, 51, 0.4);
   }
 
@@ -74,7 +74,7 @@ const styles = `
     width: 250px;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(0, 204, 51, 0.4);
+    border-right: 1px solid rgba(0, 204, 51, 0.4);
     background: rgba(0, 20, 0, 0.6);
     box-shadow: inset 0 0 20px rgba(0, 204, 51, 0.05);
     padding: 15px;
@@ -161,6 +161,7 @@ const styles = `
     display: flex;
     flex-direction: column;
     min-width: 0;
+    padding: 20px 30px;
   }
 
   .header {
