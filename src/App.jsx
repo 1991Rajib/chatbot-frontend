@@ -599,8 +599,8 @@ export default function App() {
           <div className="header">
             <div className="header-icon">❖</div>
             <div className="header-text">
-              <h1>ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</h1>
-              <p>COPYRIGHT 2077 ROBCO(R) - SYSOP: Llama 3.1</p>
+              <h1>PERSONAL CHAT BOT</h1>
+              <p>SYSOP: LLAMA 3.1</p>
             </div>
             <div className="status-dot" title="Online" />
           </div>
