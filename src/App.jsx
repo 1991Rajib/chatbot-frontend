@@ -479,11 +479,16 @@ export default function App() {
   const [chat, setChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const bottomRef = useRef(null);
+  const lastMessageRef = useRef(null);
+  const loadingRef = useRef(null);
   const textareaRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (loading) {
+      loadingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      lastMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }, [chat, loading]);
 
   const autoResize = () => {
@@ -546,7 +551,7 @@ export default function App() {
             )}
 
             {chat.map((msg, i) => (
-              <div key={i} className={`msg-row ${msg.sender}`}>
+              <div key={i} className={`msg-row ${msg.sender}`} ref={i === chat.length - 1 ? lastMessageRef : null}>
                 <div className={`avatar ${msg.sender === 'user' ? 'user-av' : 'ai-av'}`}>
                   {msg.sender === 'user' ? 'USER >' : 'SYS >'}
                 </div>
@@ -563,7 +568,7 @@ export default function App() {
             ))}
 
             {loading && (
-              <div className="msg-row">
+              <div className="msg-row" ref={loadingRef}>
                 <div className="avatar ai-av">SYS ></div>
                 <div className="bubble ai-bubble typing-bubble">
                   <div className="dot" /><div className="dot" /><div className="dot" />
@@ -573,7 +578,7 @@ export default function App() {
 
             {error && <div className="error-msg">⚠️ {error}</div>}
 
-            <div ref={bottomRef} />
+            
           </div>
         </div>
 
