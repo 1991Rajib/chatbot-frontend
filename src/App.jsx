@@ -61,7 +61,6 @@ const styles = `
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 1200px;
     height: 100vh;
     display: flex;
     margin: 0 auto;
