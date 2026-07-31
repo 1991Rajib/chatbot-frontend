@@ -599,7 +599,7 @@ export default function App() {
           <div className="header">
             <div className="header-icon">❖</div>
             <div className="header-text">
-              <h1>PERSONAL CHAT BOT</h1>
+              <h1>AI ASSISTANT</h1>
               <p>SYSOP: LLAMA 3.1</p>
             </div>
             <div className="status-dot" title="Online" />
