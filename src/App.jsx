@@ -8,6 +8,11 @@ const styles = `
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  #root {
+    width: 100%;
+    height: 100%;
+  }
+
   body {
     font-family: 'VT323', monospace;
     background: #051405;
