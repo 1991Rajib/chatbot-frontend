@@ -109,6 +109,27 @@ const styles = `
     background: #00cc33;
     color: #051405;
   }
+  
+  .token-tracker {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 204, 51, 0.4);
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .token-tracker .warning {
+    color: #ff3333;
+    animation: blink 1s step-end infinite;
+    margin-top: 5px;
+  }
+  
+  .session-tokens {
+    font-size: 14px;
+    opacity: 0.6;
+    display: block;
+    margin-top: 4px;
+  }
 
   .chat-list {
     flex: 1;
@@ -466,17 +487,22 @@ export default function App() {
     if (oldChat) {
         const parsedOld = JSON.parse(oldChat);
         if (parsedOld.length > 0) {
-            return [{ id: Date.now().toString(), title: 'Session 1', messages: parsedOld }];
+            return [{ id: Date.now().toString(), title: 'Session 1', messages: parsedOld, tokens: 0 }];
         }
     }
     
     // Default empty state
-    return [{ id: Date.now().toString(), title: 'NEW SESSION', messages: [] }];
+    return [{ id: Date.now().toString(), title: 'NEW SESSION', messages: [], tokens: 0 }];
   });
 
   const [currentId, setCurrentId] = useState(sessions[0]?.id || Date.now().toString());
   
   const currentChat = sessions.find(s => s.id === currentId)?.messages || [];
+
+  const TOKEN_LIMIT = 50000;
+  const [totalTokensUsed, setTotalTokensUsed] = useState(() => {
+    return parseInt(localStorage.getItem('robco_total_tokens') || '0', 10);
+  });
 
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -485,10 +511,14 @@ export default function App() {
   const loadingRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Persist sessions
+  // Persist sessions and tokens
   useEffect(() => {
     localStorage.setItem('robco_chat_sessions', JSON.stringify(sessions));
   }, [sessions]);
+
+  useEffect(() => {
+    localStorage.setItem('robco_total_tokens', totalTokensUsed);
+  }, [totalTokensUsed]);
 
   // Scroll behavior
   useEffect(() => {
@@ -506,7 +536,7 @@ export default function App() {
     ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
   };
 
-  const updateCurrentSession = (updater) => {
+  const updateCurrentSession = (updater, tokensAdded = 0) => {
       setSessions(prev => prev.map(s => {
           if (s.id === currentId) {
               const updatedMessages = updater(s.messages);
@@ -516,14 +546,14 @@ export default function App() {
                   const firstWords = updatedMessages[0].text.split(' ').slice(0, 4).join(' ');
                   newTitle = firstWords + (updatedMessages[0].text.length > firstWords.length ? '...' : '');
               }
-              return { ...s, messages: updatedMessages, title: newTitle };
+              return { ...s, messages: updatedMessages, title: newTitle, tokens: (s.tokens || 0) + tokensAdded };
           }
           return s;
       }));
   };
 
   const createNewSession = () => {
-      const newSession = { id: Date.now().toString(), title: 'NEW SESSION', messages: [] };
+      const newSession = { id: Date.now().toString(), title: 'NEW SESSION', messages: [], tokens: 0 };
       setSessions(prev => [newSession, ...prev]);
       setCurrentId(newSession.id);
   };
@@ -557,7 +587,11 @@ export default function App() {
 
     try {
       const res = await axios.post('/chat', { message, history: currentChat });
-      updateCurrentSession(prev => [...prev, { sender: 'ai', text: res.data.reply, time: getTime() }]);
+      const usage = res.data.usage || {};
+      const tokensExhausted = usage.total_tokens || 0;
+      
+      setTotalTokensUsed(prev => prev + tokensExhausted);
+      updateCurrentSession(prev => [...prev, { sender: 'ai', text: res.data.reply, time: getTime() }], tokensExhausted);
     } catch (err) {
       setError(err.response?.data?.error || 'Something went wrong. Try again.');
     } finally {
@@ -592,10 +626,17 @@ export default function App() {
                         className={`chat-item ${s.id === currentId ? 'active' : ''}`}
                         onClick={() => setCurrentId(s.id)}
                     >
-                        <span>{s.title}</span>
+                        <div>
+                            <span>{s.title}</span>
+                            <span className="session-tokens">{s.tokens || 0} TOKENS EXHAUSTED</span>
+                        </div>
                         <button className="delete-btn" onClick={(e) => deleteSession(e, s.id)}>✖</button>
                     </div>
                 ))}
+            </div>
+            <div className="token-tracker">
+               <div>TOKENS: {totalTokensUsed} / {TOKEN_LIMIT}</div>
+               {totalTokensUsed > (TOKEN_LIMIT * 0.9) && <div className="warning">WARNING: TOKEN LIMIT NEAR</div>}
             </div>
         </div>
 
